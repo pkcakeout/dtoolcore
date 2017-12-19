@@ -15,6 +15,8 @@ from dtoolcore.filehasher import FileHasher, md5sum_hexdigest
 logger = logging.getLogger(__name__)
 
 
+
+
 class StorageBrokerOSError(OSError):
     pass
 
@@ -38,36 +40,61 @@ class DiskStorageBroker(object):
 
     def __init__(self, uri, config_path=None):
 
-        parse_result = generous_parse_uri(uri)
-        path = parse_result.path
-
-        # Define useful absolute paths for future reference.
-        self._abspath = os.path.abspath(path)
-        self._dtool_abspath = os.path.join(self._abspath, '.dtool')
-        self._admin_metadata_fpath = os.path.join(self._dtool_abspath, 'dtool')
-        self._data_abspath = os.path.join(self._abspath, 'data')
-        self._manifest_abspath = os.path.join(
-            self._dtool_abspath,
-            'manifest.json'
-        )
-        self._readme_abspath = os.path.join(
-            self._abspath,
-            'README.yml'
-        )
-        self._overlays_abspath = os.path.join(
-            self._dtool_abspath,
-            'overlays'
-        )
-        self._metadata_fragments_abspath = os.path.join(
-            self._dtool_abspath,
-            'tmp_fragments'
-        )
+        self._set_abspaths(uri)
 
         self._essential_subdirectories = [
             self._dtool_abspath,
             self._data_abspath,
             self._overlays_abspath
         ]
+
+    def _set_abspaths(self, uri):
+        """Define useful absolute paths for future reference."""
+
+        parse_result = generous_parse_uri(uri)
+        path = parse_result.path
+        self._abspath = os.path.abspath(path)
+
+        structure_parameters = self._get_structure_parameters()
+
+        def generate_abspath(key):
+            return os.path.join(self._abspath, *structure_parameters[key])
+
+        self._dtool_abspath = generate_abspath("dtool_directory")
+        self._data_abspath = generate_abspath("data_directory")
+        self._admin_metadata_fpath = generate_abspath("admin_metadata_relpath")
+        self._manifest_abspath = generate_abspath("manifest_relpath")
+        self._readme_abspath = generate_abspath("readme_relpath")
+        self._overlays_abspath = generate_abspath("overlays_directory")
+        self._metadata_fragments_abspath = generate_abspath(
+            "metadata_fragments_directory"
+        )
+
+    def _get_structure_parameters(self):
+
+        structure_parameters = {
+            "data_directory": ["data"],
+            "readme_relpath": ["README.yml"],
+            "dtool_directory": [".dtool"],
+            "admin_metadata_relpath": [".dtool", "dtool"],
+            "structure_metadata_relpath": [".dtool", "structure.json"],
+            "manifest_relpath": [".dtool", "manifest.json"],
+            "overlays_directory": [".dtool", "overlays"],
+            "metadata_fragments_directory": [".dtool", "tmp_fragments"],
+        }
+
+        structure_fpath = os.path.join(
+            self._abspath,
+            *structure_parameters["structure_metadata_relpath"]
+        )
+
+        if os.path.isfile(structure_fpath):
+            with open(structure_fpath) as fh:
+                structure_metadata = json.load(fh)
+                from_file = structure_metadata["structure"]
+                structure_parameters.update(from_file)
+
+        return structure_parameters
 
     @classmethod
     def list_dataset_uris(cls, base_uri, config_path):
