@@ -63,6 +63,7 @@ class DiskStorageBroker(object):
         self._dtool_abspath = generate_abspath("dtool_directory")
         self._data_abspath = generate_abspath("data_directory")
         self._admin_metadata_fpath = generate_abspath("admin_metadata_relpath")
+        self._structure_metadata_fpath = generate_abspath("structure_metadata_relpath")
         self._manifest_abspath = generate_abspath("manifest_relpath")
         self._readme_abspath = generate_abspath("readme_relpath")
         self._overlays_abspath = generate_abspath("overlays_directory")
@@ -90,9 +91,7 @@ class DiskStorageBroker(object):
 
         if os.path.isfile(structure_fpath):
             with open(structure_fpath) as fh:
-                structure_metadata = json.load(fh)
-                from_file = structure_metadata["structure"]
-                structure_parameters.update(from_file)
+                structure_parameters.update(json.load(fh))
 
         return structure_parameters
 
@@ -241,6 +240,12 @@ class DiskStorageBroker(object):
         for abspath in self._essential_subdirectories:
             if not os.path.isdir(abspath):
                 os.mkdir(abspath)
+
+        structure_parameters = self._get_structure_parameters()
+        print(structure_parameters)
+        print(self._structure_metadata_fpath)
+        with open(self._structure_metadata_fpath, "w") as fh:
+            json.dump(structure_parameters, fh)
 
     def put_admin_metadata(self, admin_metadata):
         """Store the admin metadata by writing to disk.
