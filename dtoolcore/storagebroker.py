@@ -242,8 +242,6 @@ class DiskStorageBroker(object):
                 os.mkdir(abspath)
 
         structure_parameters = self._get_structure_parameters()
-        print(structure_parameters)
-        print(self._structure_metadata_fpath)
         with open(self._structure_metadata_fpath, "w") as fh:
             json.dump(structure_parameters, fh)
 
