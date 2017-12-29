@@ -11,6 +11,9 @@ This change log uses principles from `keep a changelog <http://keepachangelog.co
 Added
 ^^^^^
 
+* Reading and writing of a ``.dtool/structure.json`` file for storing metadata
+  about the structure of the dataset to the DiskStorageBroker, i.e. information
+  about key directories and files
 * Helper functions ``sanitise_uri`` and ``generous_parse_uri`` to handle URIs
   that consist only of relative paths (added to ``dtoolcore.utils``).
 
