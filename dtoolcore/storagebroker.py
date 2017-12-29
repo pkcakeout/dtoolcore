@@ -15,8 +15,6 @@ from dtoolcore.filehasher import FileHasher, md5sum_hexdigest
 logger = logging.getLogger(__name__)
 
 
-
-
 class StorageBrokerOSError(OSError):
     pass
 
@@ -63,7 +61,9 @@ class DiskStorageBroker(object):
         self._dtool_abspath = generate_abspath("dtool_directory")
         self._data_abspath = generate_abspath("data_directory")
         self._admin_metadata_fpath = generate_abspath("admin_metadata_relpath")
-        self._structure_metadata_fpath = generate_abspath("structure_metadata_relpath")
+        self._structure_metadata_fpath = generate_abspath(
+            "structure_metadata_relpath"
+        )
         self._manifest_abspath = generate_abspath("manifest_relpath")
         self._readme_abspath = generate_abspath("readme_relpath")
         self._overlays_abspath = generate_abspath("overlays_directory")

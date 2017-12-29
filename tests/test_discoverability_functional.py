@@ -4,6 +4,7 @@ import os
 
 from . import tmp_dir_fixture  # NOQA
 
+
 def test_writing_of_dtool_structure_file(tmp_dir_fixture):  # NOQA
 
     from dtoolcore import generate_admin_metadata, generate_proto_dataset
