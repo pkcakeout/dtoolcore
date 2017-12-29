@@ -1,6 +1,7 @@
 """Functional tests for the dtoolcore version 3 .dtool-structure metadata."""
 
 import os
+import json
 
 from . import tmp_dir_fixture  # NOQA
 
@@ -26,3 +27,17 @@ def test_writing_of_dtool_structure_file(tmp_dir_fixture):  # NOQA
         "structure.json"
     )
     assert os.path.isfile(expected_dtool_structure_fpath)
+
+    expected_content = {
+        "data_directory": ["data"],
+        "readme_relpath": ["README.yml"],
+        "dtool_directory": [".dtool"],
+        "admin_metadata_relpath": [".dtool", "dtool"],
+        "structure_metadata_relpath": [".dtool", "structure.json"],
+        "manifest_relpath": [".dtool", "manifest.json"],
+        "overlays_directory": [".dtool", "overlays"],
+        "metadata_fragments_directory": [".dtool", "tmp_fragments"],
+    }
+    with open(expected_dtool_structure_fpath) as fh:
+        actual_content = json.load(fh)
+    assert expected_content == actual_content
